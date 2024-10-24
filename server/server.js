@@ -6,12 +6,24 @@ const errorHandler=require("./middleware/errorHandler");      // various purpose
 const cors=require("cors");                                   // identity verification for security purposes
 const hbs = require('hbs');
 hbs.registerPartials(__dirname + '/views/partials');
-
-
+const userRoutes = require('./routes/userRoutes'); 
+const dotenv = require("dotenv");
 //env file handling
 const dotenv=require("dotenv");                                //manage environment variable
 dotenv.config();                                               //enabling env file
 
+const connectDb = async () => {
+    try {
+        await mongoose.connect(process.env.MONGODB_URI, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+        });
+        console.log("MongoDB connected successfully.");
+    } catch (error) {
+        console.error("MongoDB connection failed:", error.message);
+        process.exit(1); // Exit process with failure
+    }
+};
 
 
 connectDb();
