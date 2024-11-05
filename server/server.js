@@ -1,58 +1,82 @@
-//Frame configuration
+// const express = require("express");
+// const connectDb = require("./config/dbConnection");
+// const errorHandler = require("./middleware/errorHandler");
+// const cors = require("cors");
+// const dotenv = require("dotenv");
+// const hbs = require("hbs");
+// const userRoutes = require('./routes/userRoutes');
 
-const express=require("express");                              //nodejs framework
+// dotenv.config();
+// connectDb();
+
+// const app = express();
+// const port = process.env.PORT || 5000;
+
+// app.use(express.json());
+// app.use(cors());
+// app.use(errorHandler);
+//  // Route for user routes
+
+// app.use('/api',userRoutes);
+// app.set('view engine', 'hbs');
+// hbs.registerPartials(__dirname + '/views/partials');
+
+// app.get('/', (req, res) => res.send("Working"));
+// app.get("/home", (req, res) => res.render("home", {}));
+// app.get("/users", (req, res) => res.render("users", {}));
+
+// app.listen(port, () => {
+//     console.log(`Server running on http://localhost:${port}`);
+// });
+
+
+//FRAMEWORK CONFIGURATION
+const express = require('express');
 const connectDb=require("./config/dbConnection");
-const errorHandler=require("./middleware/errorHandler");      // various purposes authorization,error handling,request handling
-const cors=require("cors");                                   // identity verification for security purposes
-const hbs = require('hbs');
-hbs.registerPartials(__dirname + '/views/partials');
-const userRoutes = require('./routes/userRoutes'); 
-const dotenv = require("dotenv");
-//env file handling
-const dotenv=require("dotenv");                                //manage environment variable
-dotenv.config();                                               //enabling env file
+const errorHandler=require("./middlewares/errorHandler");
+const cors=require("cors");
+const hbs = require("hbs");
+const path = require("path");
 
-const connectDb = async () => {
-    try {
-        await mongoose.connect(process.env.MONGODB_URI, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-        });
-        console.log("MongoDB connected successfully.");
-    } catch (error) {
-        console.error("MongoDB connection failed:", error.message);
-        process.exit(1); // Exit process with failure
-    }
-};
-
+//env file configuration
+const dotenv=require("dotenv");
+dotenv.config();
 
 connectDb();
-const app=express();
-const port=process.env.PORT || 5000;                         
+const app= express();
+app.set('view engine', 'hbs');
+const port=process.env.PORT || 5000;
 
 app.use(express.json());
 app.use(cors());
 
-//error handling middleware
-app.use(errorHandler);
-
-//routes below
 app.get('/',(req,res)=>{
-    res.send("Working");
-})
-
-
-app.get("/home",(req,res)=>{
-    res.render("home",{})
-})
-
-app.get("/users",(req,res)=>{
-    res.render("users",{})
-})
-//app config start
-app.listen(port, ()=>{
-    console.log(`Server running on port http://localhost:${port}`);
+    res.send("working");  
 });
 
-app.set('view engine','hbs');   // to set Handlebars (hbs) as the templating engine for rendering views.    
-//npm run dev automatic restarts when you make changes to your code.
+app.get('/home',(req,res)=>{
+    res.render('home',{
+        username: "Galaxy",
+        posts: "flana dhimkana"
+    })
+})
+
+app.get('/allusers',(req,res)=>{
+    res.render('allusers',{
+        data:[{name:"saksham", age:20},
+            {name:"prachi", age:19}]
+    })
+})
+
+app.use(errorHandler);
+
+//register route
+app.use("/api/register" , require("./routes/userRoutes"));
+
+app.use("/api/registerDoctor", require("./routes/doctorsDetails"));
+
+
+
+app.listen(port,() => {
+    console.log(`Server running on port http://localhost:${port}`);
+});
