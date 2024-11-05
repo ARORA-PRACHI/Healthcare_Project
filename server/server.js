@@ -32,51 +32,72 @@
 
 //FRAMEWORK CONFIGURATION
 const express = require('express');
-const connectDb=require("./config/dbConnection");
-const errorHandler=require("./middlewares/errorHandler");
-const cors=require("cors");
+const connectDb = require("./config/dbConnection");
+const errorHandler = require("./middlewares/errorHandler");
+const cors = require("cors");
 const hbs = require("hbs");
 const path = require("path");
+const dotenv = require("dotenv");
+const multer=require("multer");
+const upload =multer({dest:'uploads/'});
 
-//env file configuration
-const dotenv=require("dotenv");
 dotenv.config();
-
 connectDb();
-const app= express();
+
+const app = express();
 app.set('view engine', 'hbs');
-const port=process.env.PORT || 5000;
+const port = process.env.PORT || 5000;
 
 app.use(express.json());
 app.use(cors());
 
-app.get('/',(req,res)=>{
+app.get('/', (req, res) => {
     res.send("working");  
 });
 
-app.get('/home',(req,res)=>{
-    res.render('home',{
+app.get('/home', (req, res) => {
+    res.render('home', {
         username: "Galaxy",
         posts: "flana dhimkana"
+    });
+});
+
+app.get('/allusers', (req, res) => {
+    res.render('allusers', {
+        data: [{ name: "saksham", age: 20 },
+               { name: "prachi", age: 19 }]
+    });
+});
+
+
+app.post('/profile', upload.single('avatar'), function (req, res, next) {
+    // req.file is the `avatar` file
+    // req.body will hold the text fields, if there were any
+    console.log(req.body);
+    console.log(req.file);
+    return res.redirect("/home");
+
     })
-})
 
-app.get('/allusers',(req,res)=>{
-    res.render('allusers',{
-        data:[{name:"saksham", age:20},
-            {name:"prachi", age:19}]
-    })
-})
+    const storage = multer.diskStorage({
+        destination: function (req, file, cb) {
+          cb(null, "./uploads")
+        },
+        filename: function (req, file, cb) {
+          const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
+          cb(null, file.fieldname + '-' + uniqueSuffix)
+        }
+        })
+    
+        const uploads = multer({ storage: storage })
 
-app.use(errorHandler);
-
-//register route
-app.use("/api/register" , require("./routes/userRoutes"));
-
+// Register routes
+app.use("/api/users", require("./routes/userRoutes")); // Use /api/users for both register and login
 app.use("/api/registerDoctor", require("./routes/doctorsDetails"));
 
+// Error handling middleware
+app.use(errorHandler);
 
-
-app.listen(port,() => {
+app.listen(port, () => {
     console.log(`Server running on port http://localhost:${port}`);
 });

@@ -8,4 +8,6 @@ router.post("/", registerDoctor);
 // GET route to get all doctors
 router.get("/", getDoctors);
 
+//router.post("/login", loginUser);
+
 module.exports = router;

@@ -60,6 +60,6 @@ const { registerUser, loginUser } = require("../controllers/userController");
 router.post("/register", registerUser);
 
 // Route to login a user
-router.post("/login", loginUser);
 
+router.post("/login", loginUser);
 module.exports = router;

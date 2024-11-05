@@ -13,7 +13,7 @@ const registerDoctor = asyncHandler(async (req, res) => {
     }
 
     const doctor = await Doctor.create({
-        name,
+        name, 
         specialization,
         phoneNumber,
         experience,
@@ -26,6 +26,7 @@ const registerDoctor = asyncHandler(async (req, res) => {
 // @desc    Get all doctors
 // @route   GET /api/doctors
 // @access  Public
+
 const getDoctors = asyncHandler(async (req, res) => {
     const doctors = await Doctor.find({});
     res.status(200).json(doctors);
