@@ -1,65 +1,60 @@
-// const express = require('express');
+// // routes/userRoutes.js
+// const express = require("express");
 // const router = express.Router();
-// const asyncHandler = require('express-async-handler');
-// const bcrypt = require('bcrypt');
-// const User = require('../models/userModel'); 
+// const User = require("../models/userModel"); // Correct path to modules
+// const { loginUser } = require("../controllers/userController");
+// const {registerUser} = require("../controllers/userController");
 
+// // login route
+// router.post("/login", loginUser);
 
-// // POST /api/register - Register a new user
-// router.post('/register', asyncHandler(async (req, res) => {
-//     const { firstName, lastName, email, password } = req.body;
+// router.post("/register", registerUser);
 
-//     if (!firstName || !lastName || !email || !password) {
-//         return res.status(400).json({ message: 'Please provide all required fields!' });
-//     }
+// // Register a new user
+// // router.post("/register", async (req, res) => {
+// //     console.log("Request Received");
+// //     try {
+// //         const { firstName, lastName, email, password, phoneNumber, age, bloodGroup, gender } = req.body;
 
-//     const userExists = await User.findOne({ email });
-//     if (userExists) {
-//         return res.status(400).json({ message: 'User already exists with this email!' });
-//     }
+// //         // Check if all required fields are provided
+// //         if (!firstName || !lastName || !email || !password || !phoneNumber || !age || !bloodGroup || !gender) {
+// //             return res.status(400).json({ message: "Please provide all required fields." });
+// //         }
 
-//     const salt = await bcrypt.genSalt(10);
-//     const hashedPassword = await bcrypt.hash(password, salt);
+// //         // Create a new user instance
+// //         const newUser = new User({
+// //             firstName,
+// //             lastName,
+// //             email,
+// //             password, // The password should be hashed before saving it to the database
+// //             phoneNumber,
+// //             age,
+// //             bloodGroup,
+// //             gender
+// //         });
 
-//     const user = await User.create({
-//         firstName,
-//         lastName,
-//         email,
-//         password: hashedPassword
-//     });
+// //         await newUser.save();
 
-//     res.status(201).json({
-//         message: 'User registered successfully!',
-//         user: {
-//             id: user._id,
-//             firstName: user.firstName,
-//             lastName: user.lastName,
-//             email: user.email
-//         }
-//     });
-// }));
-
-// // GET /api/users - Get all registered users
-// router.get('/users', asyncHandler(async (req, res) => {
-//     const users = await User.find({}, '-password');
-//     res.status(200).json(users);
-// }));
+// //         // Success response
+// //         res.status(201).json({ message: `User ${firstName} ${lastName} registered successfully!` });
+// //     } catch (error) {
+// //         // Error response
+// //         res.status(400).json({ message: "Error registering user", error: error.message });
+// //     }
+// // });
 
 // module.exports = router;
 
 
-// routes/userRoutes.js
-
-
-
+const { createToken } = require("../middleware/jwtMiddleware");
 const express = require("express");
 const router = express.Router();
-const { registerUser, loginUser } = require("../controllers/userController");
 
-// Route to register a new user
+const {
+    registerUser,
+    loginUser
+} = require("../controllers/userController");
+
 router.post("/register", registerUser);
-
-// Route to login a user
-
-router.post("/login", loginUser);
+router.post("/login", loginUser, createToken);
 module.exports = router;
